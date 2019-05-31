@@ -1,9 +1,10 @@
 FROM python:3.6.0-alpine
 
-RUN apk update && apk upgrade && apk add build-base
+RUN apk add --no-cache build-base=0.4-r1 && \
+        rm -rf /var/cache/apk/*
 
 WORKDIR /app
-ADD . /app
+COPY . /app
 
 RUN pip install -r /app/requirements.txt
 
