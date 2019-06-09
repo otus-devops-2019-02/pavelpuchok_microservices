@@ -73,3 +73,6 @@ nginx: [emerg] still could not bind()
 
 При присоединении уже созданных контейнеров к сети необходимо помнить, алиас сети указанный при создании контейнера исопльзуется только в сети к которой он присоеденится при создании. Т.е. при необходимости, надо дополнительно указывать алиасы: ``docker network connect --alias container_alias network_name container_id``
 
+## docker-compose
+Базовое имя проекта конфигурируется с помощью аргумента CLI (-p) или через enviroment variables. Из официальной документации:
+> The default project name is the basename of the project directory. You can set a custom project name by using the -p command line option or the COMPOSE_PROJECT_NAME environment variable.
