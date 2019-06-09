@@ -49,3 +49,27 @@ docker run -d --network=reddit \
     --name=ui \
     pavelpuchok/ui:${VERSION}
 ```
+
+# docker 4
+При попытке запустить несколько nginx в сети host работает только первый запущенный. Остальные не могут запуститься так как 80-ый порт в хостовой сети уже занят первым контейнером. Убедиться в этом можно посмотрев логи упавших контейнеров:
+
+```
+docker logs f54
+2019/06/09 08:10:15 [emerg] 1#1: bind() to 0.0.0.0:80 failed (98: Address already in use)
+nginx: [emerg] bind() to 0.0.0.0:80 failed (98: Address already in use)
+2019/06/09 08:10:15 [emerg] 1#1: bind() to 0.0.0.0:80 failed (98: Address already in use)
+nginx: [emerg] bind() to 0.0.0.0:80 failed (98: Address already in use)
+2019/06/09 08:10:15 [emerg] 1#1: bind() to 0.0.0.0:80 failed (98: Address already in use)
+nginx: [emerg] bind() to 0.0.0.0:80 failed (98: Address already in use)
+2019/06/09 08:10:15 [emerg] 1#1: bind() to 0.0.0.0:80 failed (98: Address already in use)
+nginx: [emerg] bind() to 0.0.0.0:80 failed (98: Address already in use)
+2019/06/09 08:10:15 [emerg] 1#1: bind() to 0.0.0.0:80 failed (98: Address already in use)
+nginx: [emerg] bind() to 0.0.0.0:80 failed (98: Address already in use)
+2019/06/09 08:10:15 [emerg] 1#1: still could not bind()
+nginx: [emerg] still could not bind()
+```
+
+При помощи ``ip netns`` мы можем убедиться что тип сети none создает отдельный NS для каждого контейнера, в то время как сеть host использует NS хостовой машины.
+
+При присоединении уже созданных контейнеров к сети необходимо помнить, алиас сети указанный при создании контейнера исопльзуется только в сети к которой он присоеденится при создании. Т.е. при необходимости, надо дополнительно указывать алиасы: ``docker network connect --alias container_alias network_name container_id``
+
