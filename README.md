@@ -78,5 +78,9 @@ nginx: [emerg] still could not bind()
 > The default project name is the basename of the project directory. You can set a custom project name by using the -p command line option or the COMPOSE_PROJECT_NAME environment variable.
 
 # monitoring
-## ДЗ 1
+
 [Docker Hub с собранными образами](https://hub.docker.com/u/pavelpuchok)
+
+### mongodb-exporter
+Для мониторинга MongoDB используется кастомный образ [mongodb-exporter от percona](https://github.com/percona/mongodb_exporter), т.к. сборки от автора на Docker Hub нету.
+

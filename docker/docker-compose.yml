@@ -59,6 +59,12 @@ services:
       - '--collector.filesystem.ignored-mount-points="^/(sys|proc|dev|host|etc)($$|/)"'
     networks:
       - default
+  mongodb-exporter:
+    image: ${USER_NAME}/mongodb-exporter:latest
+    command:
+      - '--mongodb.uri=mongodb://db:27017'
+    networks:
+      - back_net
 
 volumes:
   db:
