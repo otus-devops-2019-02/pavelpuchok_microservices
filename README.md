@@ -76,3 +76,7 @@ nginx: [emerg] still could not bind()
 ## docker-compose
 Базовое имя проекта конфигурируется с помощью аргумента CLI (-p) или через enviroment variables. Из официальной документации:
 > The default project name is the basename of the project directory. You can set a custom project name by using the -p command line option or the COMPOSE_PROJECT_NAME environment variable.
+
+# monitoring
+## ДЗ 1
+[Docker Hub с собранными образами](https://hub.docker.com/u/pavelpuchok)
