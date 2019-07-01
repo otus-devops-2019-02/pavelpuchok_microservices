@@ -76,3 +76,37 @@ nginx: [emerg] still could not bind()
 ## docker-compose
 Базовое имя проекта конфигурируется с помощью аргумента CLI (-p) или через enviroment variables. Из официальной документации:
 > The default project name is the basename of the project directory. You can set a custom project name by using the -p command line option or the COMPOSE_PROJECT_NAME environment variable.
+
+# monitoring
+
+[Docker Hub с собранными образами](https://hub.docker.com/u/pavelpuchok)
+
+### mongodb-exporter
+Для мониторинга MongoDB используется кастомный образ [mongodb-exporter от percona](https://github.com/percona/mongodb_exporter), т.к. сборки от автора на Docker Hub нету.
+
+### blackbox-exporter
+Экспортер это бинарь который слушает endpoint `/probe`.
+Эндпоинт принимает параметры `target` и `module`. `target` - хост или урл который надо проверить. `module` - отвечает за prober котороый будет делать запрос на таргет. Пример: `/probe?module=http_2xx&target=example.com/mytargetendpoint`
+Ответом на `/probe` запрос будут метрики состояния для указанного `target`
+
+Для настройки экспортера используется relabel_configs.
+**relabel_configs** - позволяет изменять, удалять, добавлять label к метрикам. Для настройки экспортера используется следующий relabel конфиг:
+
+```
+    relabel_configs:
+      # берем из метрики label __address__ и копируем в __param_target label
+      - source_labels: [__address__]
+        target_label: __param_target # __param_target используется экспортером как значение target
+      # берем из метрики label __param_target и копируем в instance label
+      - source_labels: [__param_target]
+        target_label: instance
+      # устанавалием label __address__ в значение из replacement
+      - target_label: __address__
+        replacement: blackbox-exporter:9115
+```
+
+Больше инфы про relabel_configs и blackbox-exporter:
+ * [Some notes on Prometheus's Blackbox exporter](https://utcc.utoronto.ca/~cks/space/blog/sysadmin/PrometheusBlackboxNotes)
+ * [Taking advantage of Prometheus relabeling](https://www.slideshare.net/roidelapluie/taking-advantage-of-prometheus-relabeling-109483749)
+ * [Prometheus relabeling tricks](https://medium.com/quiq-blog/prometheus-relabeling-tricks-6ae62c56cbda)
+ * [Устройство и механизм работы Prometheus Operator в Kubernetes](https://habr.com/ru/company/flant/blog/353410/)

@@ -1,0 +1,81 @@
+version: '3.3'
+services:
+  db:
+    image: mongo:${MONGO_DB_VERSION}
+    volumes:
+      - db:/data/db
+    networks:
+      back_net:
+        aliases:
+          - post_db
+          - comment_db
+  ui:
+    image: ${USER_NAME}/ui:${UI_SERVICE_VERSION}
+    ports:
+      - ${UI_PORT}:9292/tcp
+    networks:
+      - front_net
+    environment:
+      POST_SERVICE_HOST: post
+      COMMENT_SERVICE_HOST: comment
+  post:
+    image: ${USER_NAME}/post:${POST_SERVICE_VERSION}
+    networks:
+      - back_net
+      - front_net
+    environment:
+      POST_DATABASE_HOST: post_db
+  comment:
+    image: ${USER_NAME}/comment:${COMMENT_SERVICE_VERSION}
+    networks:
+      - back_net
+      - front_net
+    environment:
+      COMMENT_DATABASE_HOST: comment_db
+  prometheus:
+    image: ${USER_NAME}/prometheus
+    ports:
+      - '9090:9090'
+    volumes:
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--storage.tsdb.retention=1d'
+    networks:
+      - back_net
+      - front_net
+      - default
+  node-exporter:
+    image: prom/node-exporter:v0.15.2
+    user: root
+    volumes:
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /:/rootfs:ro
+    command:
+      - '--path.procfs=/host/proc'
+      - '--path.sysfs=/host/sys'
+      - '--collector.filesystem.ignored-mount-points="^/(sys|proc|dev|host|etc)($$|/)"'
+    networks:
+      - default
+  mongodb-exporter:
+    image: ${USER_NAME}/mongodb-exporter:latest
+    command:
+      - '--mongodb.uri=mongodb://db:27017'
+    networks:
+      - back_net
+  blackbox-exporter:
+    image: prom/blackbox-exporter:latest
+    networks:
+      - back_net
+      - front_net
+
+volumes:
+  db:
+  prometheus_data:
+
+networks:
+  front_net:
+  back_net:
+  default:
