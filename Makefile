@@ -1,6 +1,6 @@
 all: build push
 
-build: build-ui build-comment build-post build-mongodb-exporter build-prometheus
+build: build-ui build-comment build-post build-mongodb-exporter build-prometheus build-alertmanager
 
 build-ui:
 	@echo ">>> building ui"
@@ -21,6 +21,10 @@ build-mongodb-exporter:
 build-prometheus:
 	@echo ">>> building prometheus"
 	docker build -t ${USER_NAME}/prometheus monitoring/prometheus
+
+build-alertmanager:
+	@echo ">>> building alertmanager"
+	docker build -t ${USER_NAME}/alertmanager monitoring/alertmanager
 
 push: push-ui push-comment push-post push-mongodb-exporter push-prometheus
 
@@ -43,6 +47,10 @@ push-mongodb-exporter:
 push-prometheus:
 	@echo ">>> pushing prometheus"
 	docker push ${USER_NAME}/prometheus
+
+push-alertmanager:
+	@echo ">>> pushing alertmanager"
+	docker push ${USER_NAME}/alertmanager
 
 up-all: up-app up-monitoring
 

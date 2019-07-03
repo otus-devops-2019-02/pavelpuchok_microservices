@@ -48,3 +48,12 @@ scrape_configs:
       - targets:
         - 'cadvisor:8080'
 
+rule_files:
+  - alerts.yml
+
+alerting:
+  alertmanagers:
+    - scheme: http
+      static_configs:
+        - targets:
+          - "alertmanager:9093"
