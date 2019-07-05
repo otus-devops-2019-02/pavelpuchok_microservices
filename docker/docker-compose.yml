@@ -20,6 +20,13 @@ services:
     environment:
       POST_SERVICE_HOST: post
       COMMENT_SERVICE_HOST: comment
+    depends_on:
+      - post
+    logging:
+      driver: "fluentd"
+      options:
+        fluentd-address: localhost:24224
+        tag: service.ui
   post:
     image: ${USER_NAME}/post:${POST_SERVICE_VERSION}
     networks:
