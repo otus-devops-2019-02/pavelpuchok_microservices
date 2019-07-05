@@ -1,6 +1,6 @@
 all: build push
 
-build: build-ui build-comment build-post build-mongodb-exporter build-prometheus
+build: build-ui build-comment build-post build-mongodb-exporter build-prometheus build-alertmanager
 
 build-ui:
 	@echo ">>> building ui"
@@ -21,6 +21,10 @@ build-mongodb-exporter:
 build-prometheus:
 	@echo ">>> building prometheus"
 	docker build -t ${USER_NAME}/prometheus monitoring/prometheus
+
+build-alertmanager:
+	@echo ">>> building alertmanager"
+	docker build -t ${USER_NAME}/alertmanager monitoring/alertmanager
 
 push: push-ui push-comment push-post push-mongodb-exporter push-prometheus
 
@@ -43,3 +47,33 @@ push-mongodb-exporter:
 push-prometheus:
 	@echo ">>> pushing prometheus"
 	docker push ${USER_NAME}/prometheus
+
+push-alertmanager:
+	@echo ">>> pushing alertmanager"
+	docker push ${USER_NAME}/alertmanager
+
+up-all: up-app up-monitoring
+
+down-all: down-monitoring down-app
+
+restart-all: down-monitoring restart-app up-monitoring
+
+up-monitoring:
+	@echo ">>> initializing monitoring services"
+	cd docker; docker-compose -f docker-compose-monitoring.yml up -d
+
+down-monitoring:
+	@echo ">>> destroying monitoring services"
+	cd docker; docker-compose -f docker-compose-monitoring.yml down
+
+restart-monitoring: down-monitoring up-monitoring
+
+up-app:
+	@echo ">>> initializing application services"
+	cd docker; docker-compose up -d
+
+down-app:
+	@echo ">>> destroying application services"
+	cd docker; docker-compose down
+
+restart-app: down-app up-app
