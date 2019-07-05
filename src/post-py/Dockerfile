@@ -1,6 +1,6 @@
-FROM python:3.6.0-alpine
+FROM python:3.6.8-alpine3.10
 
-RUN apk add --no-cache build-base=0.4-r1 && \
+RUN apk add --no-cache build-base=0.5-r1 musl-dev=1.1.22-r2 gcc=8.3.0-r0 && \
         rm -rf /var/cache/apk/*
 
 WORKDIR /app
