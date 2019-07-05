@@ -62,7 +62,7 @@ push-fluentd:
 
 up-all: up-logging up-app up-monitoring
 
-down-all: down-monitoring down-app down-logging
+down-all: down-monitoring down-logging down-app
 
 restart-all: down-monitoring restart-logging restart-app up-monitoring
 
