@@ -1,6 +1,6 @@
 all: build push
 
-build: build-ui build-comment build-post build-mongodb-exporter build-prometheus build-alertmanager
+build: build-ui build-comment build-post build-mongodb-exporter build-prometheus build-alertmanager build-fluentd
 
 build-ui:
 	@echo ">>> building ui"
@@ -26,7 +26,11 @@ build-alertmanager:
 	@echo ">>> building alertmanager"
 	docker build -t ${USER_NAME}/alertmanager monitoring/alertmanager
 
-push: push-ui push-comment push-post push-mongodb-exporter push-prometheus
+build-fluentd:
+	@echo ">>> building fluentd"
+	docker build -t ${USER_NAME}/fluentd logging/fluentd
+
+push: push-ui push-comment push-post push-mongodb-exporter push-prometheus push-fluentd
 
 push-ui:
 	@echo ">>> pushing ui"
@@ -52,11 +56,15 @@ push-alertmanager:
 	@echo ">>> pushing alertmanager"
 	docker push ${USER_NAME}/alertmanager
 
-up-all: up-app up-monitoring
+push-fluentd:
+	@echo ">>> pushing fluentd"
+	docker push ${USER_NAME}/fluentd
 
-down-all: down-monitoring down-app
+up-all: up-logging up-app up-monitoring
 
-restart-all: down-monitoring restart-app up-monitoring
+down-all: down-monitoring down-app down-logging
+
+restart-all: down-monitoring restart-logging restart-app up-monitoring
 
 up-monitoring:
 	@echo ">>> initializing monitoring services"
@@ -77,3 +85,13 @@ down-app:
 	cd docker; docker-compose down
 
 restart-app: down-app up-app
+
+up-logging:
+	@echo ">>> initializing logging services"
+	cd docker; docker-compose -f docker-compose-logging.yml up -d
+
+down-logging:
+	@echo ">>> destroying logging services"
+	cd docker; docker-compose -f docker-compose-logging.yml down
+
+restart-logging: down-logging up-logging
