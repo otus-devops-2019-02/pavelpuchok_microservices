@@ -10,6 +10,8 @@ services:
           - post_db
           - comment_db
       prometheus:
+
+
   ui:
     image: ${USER_NAME}/ui:${UI_SERVICE_VERSION}
     ports:
@@ -20,6 +22,16 @@ services:
     environment:
       POST_SERVICE_HOST: post
       COMMENT_SERVICE_HOST: comment
+      ZIPKIN_ENABLED: ${ZIPKIN_ENABLED}
+    depends_on:
+      - post
+    logging:
+      driver: "fluentd"
+      options:
+        fluentd-address: localhost:24224
+        tag: service.ui
+
+
   post:
     image: ${USER_NAME}/post:${POST_SERVICE_VERSION}
     networks:
@@ -28,6 +40,14 @@ services:
       - prometheus
     environment:
       POST_DATABASE_HOST: post_db
+      ZIPKIN_ENABLED: ${ZIPKIN_ENABLED}
+    logging:
+      driver: "fluentd"
+      options:
+        fluentd-address: localhost:24224
+        tag: service.post
+
+
   comment:
     image: ${USER_NAME}/comment:${COMMENT_SERVICE_VERSION}
     networks:
@@ -36,6 +56,8 @@ services:
       - prometheus
     environment:
       COMMENT_DATABASE_HOST: comment_db
+      ZIPKIN_ENABLED: ${ZIPKIN_ENABLED}
+
 
 volumes:
   db:
