@@ -4,16 +4,21 @@ kind: Deployment
 metadata:
   name: post-deployment
 spec:
-  replicas: 1
+  replicas: 3
   selector:
     matchLabels:
-      app: post
+      app: reddit
+      component: post
   template:
     metadata:
       name: post-pod
       labels:
-        app: post
+        app: reddit
+        component: post
     spec:
       containers:
       - image: pavelpuchok/post
         name: post
+        env:
+          - name: POST_DATABASE_HOST
+            value: post-db
