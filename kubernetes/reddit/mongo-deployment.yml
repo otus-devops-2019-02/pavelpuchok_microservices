@@ -22,6 +22,6 @@ spec:
         - image: mongo:3.2
           name: mongo
       volumes:
-        - name: mongo-persisten-storage
+        - name: mongo-persistent-storage
           emptyDir: {}
 
