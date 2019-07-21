@@ -1,0 +1,7 @@
+.terraform
+creds/*
+kubeconfig
+*auto.tfvars
+*.backup
+*.tfstate
+
