@@ -58,8 +58,17 @@ resource "google_container_cluster" "reddit" {
     }
   }
 
+  network_policy {
+    enabled  = true
+    provider = "CALICO"
+  }
+
   addons_config {
     kubernetes_dashboard {
+      disabled = false
+    }
+
+    network_policy_config {
       disabled = false
     }
   }
