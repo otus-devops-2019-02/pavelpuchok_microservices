@@ -2,6 +2,6 @@
 CLUSTER_NAME=reddit
 CONFIG=kubeconfig
 
-export KUBECONFIG=${CONFIG}
+#export KUBECONFIG=${CONFIG}
 
 gcloud container clusters get-credentials ${CLUSTER_NAME}

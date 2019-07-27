@@ -58,8 +58,17 @@ resource "google_container_cluster" "reddit" {
     }
   }
 
+  network_policy {
+    enabled  = true
+    provider = "CALICO"
+  }
+
   addons_config {
     kubernetes_dashboard {
+      disabled = false
+    }
+
+    network_policy_config {
       disabled = false
     }
   }
@@ -78,6 +87,7 @@ resource "google_container_node_pool" "reddit_node_pool" {
   node_count = var.node_count
 
   node_config {
+    preemptible  = true
     machine_type = var.node_machine_type
     disk_size_gb = var.node_disk_size_gb
   }
